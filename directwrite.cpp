@@ -1519,9 +1519,10 @@ void HookD2DDll()
 	MessageBox(0, L"HookD2DDll", NULL, MB_OK);
 #endif
 	HMODULE d2d1 = GetModuleHandle(_T("d2d1.dll"));
+	HMODULE dw = GetModuleHandle(_T("dwrite.dll"));
+
 	if (!d2d1)
 		d2d1 = LoadLibrary(_T("d2d1.dll"));
-	HMODULE dw = GetModuleHandle(_T("dwrite.dll"));
 	if (!dw)
 		dw = LoadLibrary(_T("dwrite.dll"));
 	void* D2D1Factory = GetProcAddress(d2d1, "D2D1CreateFactory");
