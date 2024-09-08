@@ -6,7 +6,8 @@ Better font rendering for Windows.
 Latest beta
 ------------------
 
-[2021.1-RC1](https://github.com/snowie2000/mactype/releases) (Recommended)
+1. Run the installer: [2021.1-RC1](https://github.com/snowie2000/mactype/releases)
+2. Update with the latest files here: [2023.5.31](https://github.com/snowie2000/mactype/releases/tag/v1.2023.5.31)
 
 Official site
 ------------------
@@ -18,7 +19,7 @@ http://www.mactype.net
 What's new?
 ------------------
 
-- Win10 compatible
+- Win11 compatible
 - CET compatible
 - Updated FreeType
 - Support for color fonts :sunglasses:
