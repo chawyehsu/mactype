@@ -447,6 +447,40 @@ extern BYTE* AACache, *AACacheFull;
 extern HFONT g_alterGUIFont;
 extern void DebugOut(const WCHAR* szFormat, ...);
 
+
+void EZHookMain(HINSTANCE instance, DWORD reason, LPVOID lpReserved) {
+#ifdef STATIC_LIB
+	switch (reason) {
+	case DLL_PROCESS_ATTACH:
+	case DLL_THREAD_ATTACH:
+	case DLL_THREAD_DETACH:
+		EasyHookDllMain(instance, reason, lpReserved);
+	}
+#else
+	switch (reason) {
+	case DLL_PROCESS_ATTACH:
+	{
+		LPWSTR dllPath = new WCHAR[MAX_PATH + 1];
+		int nSize = GetModuleFileName(g_dllInstance, dllPath, MAX_PATH + 1);
+		WCHAR* p = &dllPath[nSize];
+		while (*--p != L'\\');
+		*p = L'\0';
+#ifdef _WIN64
+		wcscat(dllPath, L"\\easyhk64.dll");
+#else
+		wcscat(dllPath, L"\\easyhk32.dll");
+#endif
+		HMODULE hEasyhk = LoadLibrary(dllPath);
+		delete[]dllPath;
+		if (!hEasyhk) {
+			DebugOut(L"Failed to load Easyhook, exiting");
+			return false;
+		}
+	}
+	}
+#endif
+}
+
 extern COLORCACHE* g_AACache2[MAX_CACHE_SIZE]; 
 HANDLE hDelayHook = 0;
 BOOL WINAPI  DllMain(HINSTANCE instance, DWORD reason, LPVOID lpReserved)
@@ -454,6 +488,8 @@ BOOL WINAPI  DllMain(HINSTANCE instance, DWORD reason, LPVOID lpReserved)
 	try {
 		static bool bDllInited = false;
 		BOOL IsUnload = false, bEnableDW = true, bUseFontSubstitute = false;
+
+
 		switch (reason) {
 		case DLL_PROCESS_ATTACH:
 #ifdef DEBUG
@@ -463,30 +499,8 @@ BOOL WINAPI  DllMain(HINSTANCE instance, DWORD reason, LPVOID lpReserved)
 			if (bDllInited)
 				return true;
 			g_dllInstance = instance;
-
 #ifdef EASYHOOK
-#ifdef STATIC_LIB
-			EasyHookDllMain(instance, reason, lpReserved);
-#else
-			{
-				LPWSTR dllPath = new WCHAR[MAX_PATH + 1];
-				int nSize = GetModuleFileName(g_dllInstance, dllPath, MAX_PATH + 1);
-				WCHAR* p = &dllPath[nSize];
-				while (*--p != L'\\');
-				*p = L'\0';
-#ifdef _WIN64
-				wcscat(dllPath, L"\\easyhk64.dll");
-#else
-				wcscat(dllPath, L"\\easyhk32.dll");
-#endif
-				HMODULE hEasyhk = LoadLibrary(dllPath);
-				delete[]dllPath;
-				if (!hEasyhk) {
-					DebugOut(L"Failed to load Easyhook, exiting");
-					return false;
-				}
-			}
-#endif
+			EZHookMain(instance, reason, lpReserved);
 #endif
 			//初期化順序
 			//DLL_PROCESS_DETACHではこれの逆順にする
@@ -604,9 +618,15 @@ BOOL WINAPI  DllMain(HINSTANCE instance, DWORD reason, LPVOID lpReserved)
 			//APITracer::Finish();
 			break;
 		case DLL_THREAD_ATTACH:
+#ifdef EASYHOOK
+			EZHookMain(instance, reason, lpReserved);
+#endif
 			break;
 		case DLL_THREAD_DETACH:
 			g_TLInfo.ThreadTerm();
+#ifdef EASYHOOK
+			EZHookMain(instance, reason, lpReserved);
+#endif
 			break;
 		case DLL_PROCESS_DETACH:
 			//		RemoveManagerHook();
@@ -647,6 +667,9 @@ BOOL WINAPI  DllMain(HINSTANCE instance, DWORD reason, LPVOID lpReserved)
 			g_TLInfo.ProcessTerm();
 			CCriticalSectionLock::Term();
 			COwnedCriticalSectionLock::Term();
+#ifdef EASYHOOK
+			EZHookMain(instance, reason, lpReserved);
+#endif
 			break;
 		}
 		return TRUE;
