@@ -1,4 +1,4 @@
-// dll injection
+﻿// dll injection
 #define _CRT_SECURE_NO_DEPRECATE 1
 #define WINVER 0x500
 #define _WIN32_WINNT 0x500
@@ -14,7 +14,6 @@
 #include <tchar.h>
 #include "array.h"
 #include <strsafe.h>
-#include "gdiexe.rc"
 
 // _vsnwprintf用
 #include <wchar.h>		
@@ -37,13 +36,21 @@
 #pragma comment(lib, "ShLwApi.lib")
 #pragma comment(lib, "Ole32.lib")
 
+#define IDS_USAGE		101
+#define IDS_DLL			102
+#define IDC_EXEC		103
+
+static void showmsg(LPCSTR msg) {
+	MessageBoxA(NULL, msg, "MacType ERROR", MB_OK | MB_ICONSTOP);
+}
+
 static void errmsg(UINT id, DWORD code)
 {
-	char  buffer [512];
-	char  format [128];
+	char  buffer[512];
+	char  format[128];
 	LoadStringA(GetModuleHandleA(NULL), id, format, 128);
 	wnsprintfA(buffer, 512, format, code);
-	MessageBoxA(NULL, buffer, "MacType ERROR", MB_OK|MB_ICONSTOP);
+	showmsg(buffer);
 }
 
 inline HRESULT HresultFromLastError()
@@ -53,7 +60,17 @@ inline HRESULT HresultFromLastError()
 }
 
 
-//#include <detours.h>
+#include "detours.h"
+#ifdef _M_IX86
+#pragma comment (lib, "detours.lib")
+const auto MacTypeDll = L"MacType.dll";
+const auto MacTypeDllA = "MacType.dll";
+#else
+#pragma comment (lib, "detours64.lib")
+const auto MacTypeDll = L"MacType64.dll";
+const auto MacTypeDllA = "MacType64.dll";
+#endif
+
 
 HINSTANCE hinstDLL;
 
@@ -62,58 +79,95 @@ HINSTANCE hinstDLL;
 
 #define _GDIPP_EXE
 #define _GDIPP_RUN_CPP
-#include "supinfo.h"
-
-static BOOL (WINAPI * ORIG_CreateProcessW)(LPCWSTR lpApp, LPWSTR lpCmd, LPSECURITY_ATTRIBUTES pa, LPSECURITY_ATTRIBUTES ta, BOOL bInherit, DWORD dwFlags, LPVOID lpEnv, LPCWSTR lpDir, LPSTARTUPINFOW psi, LPPROCESS_INFORMATION ppi)
-	= CreateProcessW;
-
-static BOOL WINAPI IMPL_CreateProcessW(LPCWSTR lpApp, LPWSTR lpCmd, LPSECURITY_ATTRIBUTES pa, LPSECURITY_ATTRIBUTES ta, BOOL bInherit, DWORD dwFlags, LPVOID lpEnv, LPCWSTR lpDir, LPSTARTUPINFOW psi, LPPROCESS_INFORMATION ppi)
-{
-	return _CreateProcessAorW(lpApp, lpCmd, pa, ta, bInherit, dwFlags, lpEnv, lpDir, psi, ppi, ORIG_CreateProcessW);
-}
-
+//#include "supinfo.h"
 
 //#define OLD_PSDK
 
 #ifdef OLD_PSDK
 extern "C" {
-HRESULT WINAPI _SHILCreateFromPath(LPCWSTR pszPath, LPITEMIDLIST *ppidl, DWORD *rgflnOut)
-{
-	if (!pszPath || !ppidl) {
-		return E_INVALIDARG;
-	}
+	HRESULT WINAPI _SHILCreateFromPath(LPCWSTR pszPath, LPITEMIDLIST* ppidl, DWORD* rgflnOut)
+	{
+		if (!pszPath || !ppidl) {
+			return E_INVALIDARG;
+		}
 
-	LPSHELLFOLDER psf;
-	HRESULT hr = ::SHGetDesktopFolder(&psf);
-	if (hr != NOERROR) {
+		LPSHELLFOLDER psf;
+		HRESULT hr = ::SHGetDesktopFolder(&psf);
+		if (hr != NOERROR) {
+			return hr;
+		}
+
+		ULONG chEaten;
+		LPOLESTR lpszDisplayName = ::StrDupW(pszPath);
+		hr = psf->ParseDisplayName(NULL, NULL, lpszDisplayName, &chEaten, ppidl, rgflnOut);
+		::LocalFree(lpszDisplayName);
+		psf->Release();
 		return hr;
 	}
 
-	ULONG chEaten;
-	LPOLESTR lpszDisplayName = ::StrDupW(pszPath);
-	hr = psf->ParseDisplayName(NULL, NULL, lpszDisplayName, &chEaten, ppidl, rgflnOut);
-	::LocalFree(lpszDisplayName);
-	psf->Release();
-	return hr;
-}
+	void WINAPI _SHFree(void* pv)
+	{
+		if (!pv) {
+			return;
+		}
 
-void WINAPI _SHFree(void *pv)
-{
-	if (!pv) {
-		return;
+		LPMALLOC pMalloc = NULL;
+		if (::SHGetMalloc(&pMalloc) == NOERROR) {
+			pMalloc->Free(pv);
+			pMalloc->Release();
+		}
 	}
-
-	LPMALLOC pMalloc = NULL;
-	if (::SHGetMalloc(&pMalloc) == NOERROR) {
-		pMalloc->Free(pv);
-		pMalloc->Release();
-	}
-}
 }
 #else
 #define _SHILCreateFromPath	SHILCreateFromPath
 #define _SHFree				SHFree
 #endif
+
+
+bool isX64PE(const TCHAR* file_path) {
+	HANDLE hFile = CreateFile(file_path, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hFile == INVALID_HANDLE_VALUE) {
+		showmsg("Error opening file");
+		return false;
+	}
+
+	IMAGE_DOS_HEADER dosHeader;
+	DWORD bytesRead;
+	if (!ReadFile(hFile, &dosHeader, sizeof(IMAGE_DOS_HEADER), &bytesRead, NULL)) {
+		showmsg("Error reading file");
+		CloseHandle(hFile);
+		return false;
+	}
+
+	// Check if it's a PE file
+	if (dosHeader.e_magic != IMAGE_DOS_SIGNATURE) {
+		showmsg("Not a PE file");
+		CloseHandle(hFile);
+		return false;
+	}
+
+	IMAGE_NT_HEADERS ntHeaders;
+	// Seek to the PE header offset
+	SetFilePointer(hFile, dosHeader.e_lfanew, NULL, FILE_BEGIN);
+	if (!ReadFile(hFile, &ntHeaders, sizeof(IMAGE_NT_HEADERS), &bytesRead, NULL)) {
+		showmsg("Error reading PE header");
+		CloseHandle(hFile);
+		return false;
+	}
+
+	if (ntHeaders.FileHeader.Machine == IMAGE_FILE_MACHINE_I386) {
+		CloseHandle(hFile);
+		return false;
+	}
+	else if (ntHeaders.FileHeader.Machine == IMAGE_FILE_MACHINE_AMD64) {
+		CloseHandle(hFile);
+		return true;
+	}
+	else {
+		CloseHandle(hFile);
+		return false;
+	}
+}
 
 
 // １つ目の引数だけファイルとして扱い、実行する。
@@ -125,34 +179,35 @@ static HRESULT HookAndExecute(int show)
 {
 	int     argc = 0;
 	LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
-	if(!argv) {
+	if (!argv) {
 		return HresultFromLastError();
 	}
-	if(argc <= 1) {
-		char buffer [256];
+	if (argc <= 1) {
+		char buffer[256];
 		LoadStringA(GetModuleHandleA(NULL), IDS_USAGE, buffer, 256);
 		MessageBoxA(NULL,
 			buffer
-			,"MacType", MB_OK|MB_ICONINFORMATION);
+			, "MacType", MB_OK | MB_ICONINFORMATION);
 		LocalFree(argv);
 		return S_OK;
 	}
 
+
 	int i;
 	size_t length = 1;
-	for(i=2; i<argc; i++) {
+	for (i = 1; i < argc; i++) {
 		length += wcslen(argv[i]) + 3;
 	}
 
 	LPWSTR cmdline = (WCHAR*)calloc(sizeof(WCHAR), length);
-	if(!cmdline) {
+	if (!cmdline) {
 		LocalFree(argv);
 		return E_OUTOFMEMORY;
 	}
 
 	LPWSTR p = cmdline;
 	*p = L'\0';
-	for(i=2; i<argc; i++) {
+	for (i = 1; i < argc; i++) {
 		const bool dq = !!wcschr(argv[i], L' ');
 		if (dq) {
 			*p++ = '"';
@@ -169,12 +224,26 @@ static HRESULT HookAndExecute(int show)
 
 	*CharPrevW(cmdline, p) = L'\0';
 
+// now we got the full cmdline for external exetuble. let's check if we can hook into it
+#ifdef _M_IX86
+	if (isX64PE(argv[1])) {
+		ShellExecute(NULL, NULL, L"macloader64.exe", cmdline, NULL, SW_SHOW);
+		return S_OK;
+	}
+#else
+	if (!isX64PE(argv[1])) {
+		ShellExecute(NULL, NULL, L"macloader.exe", cmdline, NULL, SW_SHOW);
+		return S_OK;
+	}
+#endif
+
 	WCHAR file[MAX_PATH], dir[MAX_PATH];
 	GetCurrentDirectoryW(_countof(dir), dir);
 	StringCchCopyW(file, _countof(file), argv[1]);
-	if(PathIsRelativeW(file)) {
+	if (PathIsRelativeW(file)) {
 		PathCombineW(file, dir, file);
-	} else {
+	}
+	else {
 		WCHAR gdippDir[MAX_PATH];
 		GetModuleFileNameW(NULL, gdippDir, _countof(gdippDir));
 		PathRemoveFileSpec(gdippDir);
@@ -189,86 +258,58 @@ static HRESULT HookAndExecute(int show)
 		}
 	}
 
-	LocalFree(argv);
-	argv = NULL;
-
 #ifdef _DEBUG
-	if((GetAsyncKeyState(VK_CONTROL) & 0x8000)
-			&& MessageBoxW(NULL, cmdline, NULL, MB_YESNO) != IDYES) {
+	if ((GetAsyncKeyState(VK_CONTROL) & 0x8000)
+		&& MessageBoxW(NULL, cmdline, NULL, MB_YESNO) != IDYES) {
 		free(cmdline);
 		return NOERROR;
 	}
 #endif
 
-	LPITEMIDLIST pidl = NULL;
-	HRESULT hr;
 
-	//fileのアイテムIDリストを取得
-	hr = _SHILCreateFromPath(file, &pidl, NULL);
-	if(SUCCEEDED(hr) && pidl) {
-		//SEE_MASK_INVOKEIDLISTを使うと
-		//explorerでクリックして起動したのと同じ動作になる
-		SHELLEXECUTEINFOW sei = { sizeof(SHELLEXECUTEINFOW) };
-		sei.fMask			= SEE_MASK_INVOKEIDLIST
-								| SEE_MASK_CONNECTNETDRV
-								| SEE_MASK_FLAG_DDEWAIT
-								| SEE_MASK_DOENVSUBST
-								| SEE_MASK_WAITFORINPUTIDLE;
-		sei.hwnd			= GetDesktopWindow();
-		sei.lpParameters	= cmdline;
-		sei.lpDirectory		= dir;
-		sei.nShow			= show;
-		sei.lpIDList		= pidl;
+	PROCESS_INFORMATION processInfo;
+	STARTUPINFO startupInfo = { 0 };
+	startupInfo.cb = sizeof(startupInfo);
 
-		//ShellExecuteExWが内部で呼び出すCreateProcessWをフックして
-		//HookChildProcesses相当の処理を行う
-
-		DetourTransactionBegin();
-		DetourUpdateThread(GetCurrentThread());
-		DetourAttach(&(PVOID&)ORIG_CreateProcessW, IMPL_CreateProcessW);
-		hr = DetourTransactionCommit();
-
-		if(hr == NOERROR) {
-			if(ShellExecuteExW(&sei)) {
-				hr = S_OK;
-			} else {
-				hr = HresultFromLastError();
-			}
-		}
-
-		DetourTransactionBegin();
-		DetourUpdateThread(GetCurrentThread());
-		DetourDetach(&(PVOID&)ORIG_CreateProcessW, IMPL_CreateProcessW);
-		DetourTransactionCommit();
+	// get current directory and append mactype dll 
+	char path[MAX_PATH] = { 0 };
+	if (GetModuleFileNameA(NULL, path, _countof(path))) {
+		PathRemoveFileSpecA(path);
+		strcat(path, "\\");
 	}
+	strcat(path, MacTypeDllA);
 
-	if(pidl)
-		_SHFree(pidl);
+	auto ret = DetourCreateProcessWithDllEx(NULL, cmdline, NULL, NULL, false, 0, NULL, dir, &startupInfo, &processInfo, path, NULL);
+
 	free(cmdline);
-	return hr;
+	LocalFree(argv);
+	argv = NULL;
+	return ret ? S_OK : E_ACCESSDENIED;
 }
-
 
 int WINAPI wWinMain(HINSTANCE ins, HINSTANCE prev, LPWSTR cmd, int show)
 {
 	_CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_LEAK_CHECK_DF);
 	OleInitialize(NULL);
 
-	WCHAR path [MAX_PATH];
-	if(GetModuleFileNameW(NULL, path, _countof(path))) {
-		PathRenameExtensionW(path, L".dll");
+	WCHAR path[MAX_PATH];
+	if (GetModuleFileNameW(NULL, path, _countof(path))) {
+		PathRemoveFileSpec(path);
+		wcscat(path, L"\\");
+		wcscat(path, MacTypeDll);
 		//DONT_RESOLVE_DLL_REFERENCESを指定すると依存関係の解決や
 		//DllMainの呼び出しが行われない
 		hinstDLL = LoadLibraryExW(path, NULL, DONT_RESOLVE_DLL_REFERENCES);
 	}
-	if(!hinstDLL) {
+	if (!hinstDLL) {
 		errmsg(IDS_DLL, HresultFromLastError());
-	} else {
+	}
+	else {
 		PathRemoveFileSpecW(path);
 		SetCurrentDirectoryW(path);
 
 		HRESULT hr = HookAndExecute(show);
-		if(hr != S_OK) {
+		if (hr != S_OK) {
 			errmsg(IDC_EXEC, hr);
 		}
 	}

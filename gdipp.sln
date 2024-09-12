@@ -4,6 +4,8 @@ VisualStudioVersion = 17.4.33103.184
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MacType", "gdipp.vcxproj", "{15C33FD9-0811-4981-B08F-E0BAD74A3028}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "macloader", "macloader.vcxproj", "{6D6AC860-BA16-4BE7-9169-21787F21CB6F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug Infinality|Win32 = Debug Infinality|Win32
@@ -50,6 +52,34 @@ Global
 		{15C33FD9-0811-4981-B08F-E0BAD74A3028}.Release+StaticHook|Win32.Build.0 = Release+StaticHook|Win32
 		{15C33FD9-0811-4981-B08F-E0BAD74A3028}.Release+StaticHook|x64.ActiveCfg = Release+StaticHook|x64
 		{15C33FD9-0811-4981-B08F-E0BAD74A3028}.Release+StaticHook|x64.Build.0 = Release+StaticHook|x64
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Debug Infinality|Win32.ActiveCfg = Debug|Win32
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Debug Infinality|Win32.Build.0 = Debug|Win32
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Debug Infinality|x64.ActiveCfg = Debug|x64
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Debug Infinality|x64.Build.0 = Debug|x64
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Debug|Win32.Build.0 = Debug|Win32
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Debug|x64.ActiveCfg = Debug|x64
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Debug|x64.Build.0 = Debug|x64
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Rel+Detours|Win32.ActiveCfg = Release|Win32
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Rel+Detours|Win32.Build.0 = Release|Win32
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Rel+Detours|x64.ActiveCfg = Release|x64
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Rel+Detours|x64.Build.0 = Release|x64
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Rel+Trace|Win32.ActiveCfg = Release|Win32
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Rel+Trace|Win32.Build.0 = Release|Win32
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Rel+Trace|x64.ActiveCfg = Release|x64
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Rel+Trace|x64.Build.0 = Release|x64
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Release Infinality|Win32.ActiveCfg = Release|Win32
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Release Infinality|Win32.Build.0 = Release|Win32
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Release Infinality|x64.ActiveCfg = Release|x64
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Release Infinality|x64.Build.0 = Release|x64
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Release|Win32.ActiveCfg = Release|Win32
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Release|Win32.Build.0 = Release|Win32
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Release|x64.ActiveCfg = Release|x64
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Release|x64.Build.0 = Release|x64
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Release+StaticHook|Win32.ActiveCfg = Release|Win32
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Release+StaticHook|Win32.Build.0 = Release|Win32
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Release+StaticHook|x64.ActiveCfg = Release|x64
+		{6D6AC860-BA16-4BE7-9169-21787F21CB6F}.Release+StaticHook|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
