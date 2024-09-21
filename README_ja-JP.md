@@ -1,6 +1,5 @@
 MacType
 ========================
-[日本語](./README_ja-JP.md)
 
 Better font rendering for Windows.
 
