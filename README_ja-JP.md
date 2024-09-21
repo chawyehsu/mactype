@@ -41,20 +41,21 @@ What's new?
 
 MacType は現在寄付を受付中です。
 
-http://www.mactype.net にアクセスして右下の隅にご注目ください。:heart:
+http://www.mactype.net にアクセスして右下の隅にご注目ください :heart:
 
-ご支援ありがとうございます! 寄付金はサーバーの維持費、更新の継続、そしてコーヒーの購入に役立てられます。:coffee:
+ご支援ありがとうございます! 寄付金はサーバーの維持費、更新の継続、そしてコーヒーの購入に役立てられます :coffee:
 
 既知の問題
 ---------------
 
 - 更新をする前にプロファイルをバックアップしてください。
 
-- 中国語(繁体/簡体)と英語のみが完全にローカライズされており、言語ファイルに文字列の欠落があります。MacType Tuner で一部のオプションに欠落がある可能性があります。翻訳にご協力ください。
+- 中国語 (繁体字/簡体字) と英語のみが完全にローカライズされており、言語ファイルに文字列の欠落があります。MacType Tuner で一部のオプションに欠落がある可能性があります。翻訳にご協力ください。
 
 - MacType-patch を MacType 公式ビルドと一緒に使用したい場合は、プロファイルに｢DirectWrite=0｣を追加することを忘れないでください。この操作を忘れると動作に問題が発生します。
 
-- 64bit の Windows を使用している場合、マルウェアまたはウィルス対策ソフトで MacType と競合する可能性があります。これは、MacType が実行中のソフトウェアを変更しようと認識するために発生します。回避策としてはサービスモード(推奨)で実行するか、プロファイルに｢HookChildProcesses=0｣を追加してください。詳細な説明は https://github.com/snowie2000/mactype/wiki/HookChildProcesses を参照してください。
+- 64 ビットの Windows を使用している場合、マルウェアまたはウィルス対策ソフトで MacType が競合する可能性があります。これは、MacType が実行中のソフトウェアを変更しようと認識するために発生します。回避策としてはサービスモード (推奨) で実行するか、プロファイルに｢HookChildProcesses=0｣を追加してください。<br>
+詳細な説明は https://github.com/snowie2000/mactype/wiki/HookChildProcesses を参照してください。
 
 - Office 2013 は DirectWrite または GDI を使用していません (独自のカスタムレンダリングを使用しています)。そのため、Office 2013 で MacType は動作しません。これが気になる方は、GDI を使用している Office 2010 か DirectWrite を使用している Office 2016 以降を使用してください。 
 
@@ -65,7 +66,8 @@ http://www.mactype.net にアクセスして右下の隅にご注目ください
 
 Windows 10 以降ではウィザードを使用したレジストリモードの有効化はできなくなりました。 
 
-レジストリモードを手動で有効化する方法については、[Wiki](https://github.com/snowie2000/mactype/wiki/Enable-registry-mode-manually) に詳しいガイドがあります。アクセスする前にスクリュードライバーを準備してくださいね。
+レジストリモードを手動で有効化する方法については、[Wiki](https://github.com/snowie2000/mactype/wiki/Enable-registry-mode-manually) に詳しいガイドがあります。<br>
+アクセスする前にスクリュードライバーを準備してくださいね。
 
 ビルドのやり方
 -------------
