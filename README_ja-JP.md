@@ -1,74 +1,74 @@
 MacType
 ========================
 
-Better font rendering for Windows.
+Windows のフォントレンダリングを改善。
 
-Latest build
+最新ビルド
 ------------------
 
-[Download](https://github.com/snowie2000/mactype/releases/latest)
+[ダウンロード](https://github.com/snowie2000/mactype/releases/latest)
 
-Official site
+公式サイト
 ------------------
 
-MacType official site: 
+MacType 公式サイト: 
 
 http://www.mactype.net
 
 What's new?
 ------------------
 
-- Win11 compatible
-- CET compatible
-- Updated FreeType
-- Support for color fonts :sunglasses:
-- New installer
-- Lots of bug fixes
-- Updates for multi-monitor support
-- Tray app can intercept explorer in Service Mode now
-- Tweaks for diacritics
-- Updates to EasyHook
-- Lower CPU in Tray Mode
-- Better DirectWrite support thanks to [しらいと](http://silight.hatenablog.jp)
-- Separate DirectWrite parameter adjustment
-- Traditional Chinese localization greatly improved thanks to GT Wang
-- English localization improved
-- Added Korea localization, thanks to 조현희
-- MultiLang system improved
+- Win11 の互換性
+- CET の互換性
+- 更新された FreeType
+- カラーフォントのサポート :sunglasses:
+- 新しいインストーラー
+- 多くのバグ修正
+- マルチモニターのサポートを更新
+- サービスモードでエクスプローラーのトレイアプリを傍受
+- ダイアクリティカルマークの調整
+- EasyHook を更新
+- トレイモードで CPU の低負荷設定
+- [しらいと](http://silight.hatenablog.jp)氏による DirectWrite のサポートの向上
+- DirectWrite パラメータの個別調整 
+- GT Wang による繁体字中国語の大幅な改善
+- 英語訳の改善
+- 韓国語訳の追加、조현희に感謝
+- 多言語システムの改善
 
-Donation
+寄付
 ------------------
 
-MacType now accepts donations. 
+MacType は現在寄付を受付中です。
 
-Please visit http://www.mactype.net and keep an eye on the bottom right corner :heart:
+http://www.mactype.net にアクセスして右下の隅にご注目ください。:heart:
 
-Thank you for your support! Your donations will keep the server running, keep me updating, and buy more coffees :coffee:
+ご支援ありがとうございます! 寄付金はサーバーの維持費、更新の継続、そしてコーヒーの購入に役立てられます。:coffee:
 
-Known issues
+既知の問題
 ---------------
 
-- Please backup your profiles before upgrading!
+- 更新をする前にプロファイルをバックアップしてください。
 
-- Only Chinese simplified/Traditional and English are fully localized, some options may missing in MacType Tuner due to the strings missing in the language file. You can help with translations!
+- 中国語(繁体/簡体)と英語のみが完全にローカライズされており、言語ファイルに文字列の欠落があります。MacType Tuner で一部のオプションに欠落がある可能性があります。翻訳にご協力ください。
 
-- If you want to use MacType-patch together with MacType official release, remember to add DirectWrite=0 to your profile or you will have mysterious problems
+- MacType-patch を MacType 公式ビルドと一緒に使用したい場合は、プロファイルに｢DirectWrite=0｣を追加することを忘れないでください。この操作を忘れると動作に問題が発生します。
 
-- If you're running 64 bit Windows, antimalware/antivirus software may conflict with MacType, because it sees MacType trying to modify running software. One possible workaround is to try running in Service Mode (recommended), or add HookChildProcesses=0 to your profile. See https://github.com/snowie2000/mactype/wiki/HookChildProcesses for an explanation
+- 64bit の Windows を使用している場合、マルウェアまたはウィルス対策ソフトで MacType と競合する可能性があります。これは、MacType が実行中のソフトウェアを変更しようと認識するために発生します。回避策としてはサービスモード(推奨)で実行するか、プロファイルに｢HookChildProcesses=0｣を追加してください。詳細な説明は https://github.com/snowie2000/mactype/wiki/HookChildProcesses を参照してください。
 
-- Office 2013 does not use DirectWrite or GDI (it uses its own custom rendering), so Office 2013 doesn't work with MacType. If this bothers you you can use Office 2010 which uses GDI or Office 2016+ which uses DirectWrite.
+- Office 2013 は DirectWrite または GDI を使用していません (独自のカスタムレンダリングを使用しています)。そのため、Office 2013 で MacType は動作しません。これが気になる方は、GDI を使用している Office 2010 か DirectWrite を使用している Office 2016 以降を使用してください。 
 
-- WPS has a built in defense that **UNLOADS** MacType automatically. The latest version has a workaround [here](https://github.com/snowie2000/mactype/wiki/WPS) thanks to wmjordan.
+- WPS には MacType を自動的に **アンロード** する防御機能が組み込まれています。最新のバージョンでは、wmjordan の協力により[こちら](https://github.com/snowie2000/mactype/wiki/WPS)の回避策が用意されています。
 
-How to get registry mode back
+レジストリモードを戻す方法
 -------------
 
-It is no longer possible to enable registry mode via the wizard in Windows 10. 
+Windows 10 以降ではウィザードを使用したレジストリモードの有効化はできなくなりました。 
 
-We have a detailed guide on how you can enable the registry mode manually in [wiki](https://github.com/snowie2000/mactype/wiki/Enable-registry-mode-manually), get your screwdrivers ready before you head over to it.
+レジストリモードを手動で有効化する方法については、[Wiki](https://github.com/snowie2000/mactype/wiki/Enable-registry-mode-manually) に詳しいガイドがあります。アクセスする前にスクリュードライバーを準備してくださいね。
 
-How to build
+ビルドのやり方
 -------------
 
-Check how to build [document](https://github.com/snowie2000/mactype/blob/directwrite/doc/HOWTOBUILD.md)
+ビルドについては[ドキュメント](https://github.com/snowie2000/mactype/blob/directwrite/doc/HOWTOBUILD.md)をご確認ください。
 
