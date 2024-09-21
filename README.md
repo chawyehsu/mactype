@@ -1,13 +1,13 @@
 MacType
 ========================
+[日本語](./README_ja-JP.md)
 
 Better font rendering for Windows.
 
-Latest beta
+Latest build
 ------------------
 
-1. Run the installer: [2021.1-RC1](https://github.com/snowie2000/mactype/releases)
-2. Update with the latest files here: [2023.5.31](https://github.com/snowie2000/mactype/releases/tag/v1.2023.5.31)
+[Download](https://github.com/snowie2000/mactype/releases/latest)
 
 Official site
 ------------------
@@ -30,7 +30,7 @@ What's new?
 - Tweaks for diacritics
 - Updates to EasyHook
 - Lower CPU in Tray Mode
-- Better DirectWrite support thanks to しらいと[http://silight.hatenablog.jp]
+- Better DirectWrite support thanks to [しらいと](http://silight.hatenablog.jp)
 - Separate DirectWrite parameter adjustment
 - Traditional Chinese localization greatly improved thanks to GT Wang
 - English localization improved
