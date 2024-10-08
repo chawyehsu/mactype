@@ -36,7 +36,7 @@ void MyDebug(const TCHAR * sz, ...)
 
 struct ComMethodHooker {
 	// The target function if it has been hooked
-	BOOL (*lpGetTargetFunc)();
+	BOOL (*lpIsHooked)();
 	// The method the vftable refers to
 	void*(*lpGetMethod)(IUnknown* obj);
 	// Hook the method
@@ -46,9 +46,6 @@ struct ComMethodHooker {
 #define COM_METHOD_HOOKER(type, name, index) ComMethodHooker { \
 	[]() -> BOOL { \
 		return ISHOOKED(name); \
-		/*if (!ISHOOKED(name)) \
-			return NULL; \
-		return HOOK_##name.Link->TargetProc;*/ \
 	}, \
 	[](IUnknown* obj) -> void* { \
 		return (*reinterpret_cast<void***>(obj))[index]; \
@@ -404,25 +401,7 @@ void HookRenderTargetMethod(
 	ComMethodHooker methodHookers[]
 	) {
 	void* method = methodHookers[hookCategory].lpGetMethod(pD2D1RenderTarget);
-
-	if (D2D1_RENDER_TARGET_CATEGORY != hookCategory) {
-		BOOL target = methodHookers[D2D1_RENDER_TARGET_CATEGORY].lpGetTargetFunc();
-		if (target) {
-			return;
-		}
-	}
-	if (D2D1_RENDER_TARGET1_CATEGORY != hookCategory) {
-		BOOL target = methodHookers[D2D1_RENDER_TARGET1_CATEGORY].lpGetTargetFunc();
-		if (target) {
-			return;
-		}
-	}
-	if (D2D1_DEVICE_CONTEXT_CATEGORY != hookCategory) {
-		BOOL target = methodHookers[D2D1_DEVICE_CONTEXT_CATEGORY].lpGetTargetFunc();
-		if (target) {
-			return;
-		}
-	}
+	if (!method || methodHookers[hookCategory].lpIsHooked()) return;	// fn is not available or already hooked
 
 	methodHookers[hookCategory].lpHookFunc(pD2D1RenderTarget);
 }
@@ -501,7 +480,7 @@ void HookRenderTarget(
 	};
 
 	if (hookCategory == D2D1_RENDER_TARGET_CATEGORY) {
-		static bool loaded1 = [&] {
+		static bool loaded1 = [&] {			
 			CCriticalSectionLock __lock(CCriticalSectionLock::CS_DWRITE);
 			HookRenderTargetMethod(pD2D1RenderTarget, hookCategory, hookDrawText);
 			HookRenderTargetMethod(pD2D1RenderTarget, hookCategory, hookDrawGlyphRun);
