@@ -7,3 +7,7 @@ Rel*/
 x64/
 *.vcxproj.user
 *.DotSettings.user
+*.conda
+.pixi/
+build/
+output/

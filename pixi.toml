@@ -1,0 +1,20 @@
+[workspace]
+channels = ["https://prefix.dev/conda-forge"]
+platforms = ["win-64"]
+preview = ["pixi-build"]
+
+[tasks]
+
+[dependencies]
+
+# ------------------ #
+# Package definition #
+# ------------------ #
+[package]
+name = "mactype"
+authors = ["snowie2000 <mactype.feedback@gmail.com>"]
+description = "Better font rendering for Windows"
+version = "0.1.0"
+
+[package.build]
+backend = { name = "pixi-build-cmake", version = "*" }
