@@ -7,3 +7,6 @@ channels = ["conda-forge"]
 platforms = ["win-64"]
 
 [tasks]
+
+[dependencies]
+nlohmann_json = ">=3.11.3,<4"
