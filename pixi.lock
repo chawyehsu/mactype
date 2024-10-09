@@ -1,9 +1,33 @@
 version: 7
 platforms:
 - name: win-64
+- name: win-arm64
 environments:
   default:
     channels:
     - url: https://prefix.dev/conda-forge/
-    packages: {}
-packages: []
+    packages:
+      win-64:
+      - conda: https://prefix.dev/conda-forge/win-64/nlohmann_json-3.12.0-h5112557_1.conda
+      win-arm64:
+      - conda: https://prefix.dev/conda-forge/win-arm64/nlohmann_json-3.12.0-hf7d560f_1.conda
+packages:
+- conda: https://prefix.dev/conda-forge/win-64/nlohmann_json-3.12.0-h5112557_1.conda
+  sha256: 045edd5d571c235de67472ad8fe03d9706b8426c4ba9a73f408f946034b6bc5e
+  md5: 24a9dde77833cc48289ef92b4e724da4
+  constrains:
+  - nlohmann_json-abi ==3.12.0
+  license: MIT
+  license_family: MIT
+  run_exports: {}
+  size: 134870
+  timestamp: 1758194302226
+- conda: https://prefix.dev/conda-forge/win-arm64/nlohmann_json-3.12.0-hf7d560f_1.conda
+  sha256: 48936337b45dee6fba95074042474d93db27dc70a72e012ac1a81e8005984d4a
+  md5: 9be73a1c27bd72a0b9a6a5c0ef64d8ac
+  constrains:
+  - nlohmann_json-abi ==3.12.0
+  license: MIT
+  run_exports: {}
+  size: 134935
+  timestamp: 1768670764324
