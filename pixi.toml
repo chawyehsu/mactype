@@ -10,3 +10,4 @@ platforms = ["win-64"]
 
 [dependencies]
 nlohmann_json = ">=3.11.3,<4"
+freetype = ">=2.12.1,<3"
