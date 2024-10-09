@@ -1,0 +1,9 @@
+[project]
+name = "mactype"
+version = "0.1.0"
+description = "Better font rendering for Windows"
+authors = ["snowie2000 <mactype.feedback@gmail.com>"]
+channels = ["conda-forge"]
+platforms = ["win-64"]
+
+[tasks]
