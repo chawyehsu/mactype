@@ -1,11 +1,12 @@
 [workspace]
-channels = ["https://prefix.dev/conda-forge"]
+channels = ["chawyehsu", "https://prefix.dev/conda-forge"]
 platforms = ["win-64", "win-arm64"]
 preview = ["pixi-build"]
 
 [tasks]
 
 [dependencies]
+detours = ">=4.0.1,<5"
 nlohmann_json = ">=3.11.3,<4"
 freetype = { path = "vendor/freetype" }
 
@@ -22,5 +23,6 @@ version = "0.1.0"
 backend = { name = "pixi-build-cmake", version = "*" }
 
 [package.host-dependencies]
+detours = ">=4.0.1,<5"
 nlohmann_json = ">=3.11.3,<4"
 freetype = { path = "vendor/freetype" }

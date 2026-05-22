@@ -84,7 +84,7 @@ extern LONG g_bHookEnabled;
 
 #ifdef USE_DETOURS
 //detours
-#include "detours.h"
+#include <detours.h>
 //
 #define HOOK_MANUALLY(rettype, name, argtype, arglist) ;
 #define HOOK_DEFINE(rettype, name, argtype, arglist) \

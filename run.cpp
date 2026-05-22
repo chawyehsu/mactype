@@ -60,7 +60,7 @@ inline HRESULT HresultFromLastError()
 }
 
 
-#include "detours.h"
+#include <detours.h>
 #ifdef _M_IX86
 #pragma comment (lib, "detours.lib")
 const auto MacTypeDll = L"MacType.dll";

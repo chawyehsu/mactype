@@ -5,9 +5,11 @@ platforms:
 environments:
   default:
     channels:
+    - url: https://conda.anaconda.org/chawyehsu/
     - url: https://prefix.dev/conda-forge/
     packages:
       win-64:
+      - conda: https://conda.anaconda.org/chawyehsu/win-64/detours-4.0.1-h659f713_1.conda
       - conda: https://prefix.dev/conda-forge/win-64/nlohmann_json-3.12.0-h5112557_1.conda
       - conda: https://prefix.dev/conda-forge/win-64/ucrt-10.0.26100.0-h57928b3_0.conda
       - conda: https://prefix.dev/conda-forge/win-64/vc-14.5-h1b7c187_37.conda
@@ -15,12 +17,32 @@ environments:
       - conda: https://prefix.dev/conda-forge/win-64/vcomp14-14.51.36231-h1b9f54f_37.conda
       - conda_source: freetype[e68a6a51] @ vendor/freetype
       win-arm64:
+      - conda: https://conda.anaconda.org/chawyehsu/win-arm64/detours-4.0.1-he0580a1_1.conda
       - conda: https://prefix.dev/conda-forge/win-arm64/nlohmann_json-3.12.0-hf7d560f_1.conda
       - conda: https://prefix.dev/conda-forge/win-arm64/vc-14.5-h3cbcbde_37.conda
       - conda: https://prefix.dev/conda-forge/win-arm64/vc14_runtime-14.51.36231-he45b04c_37.conda
       - conda: https://prefix.dev/conda-forge/win-arm64/vcomp14-14.51.36231-he45b04c_37.conda
       - conda_source: freetype[1e135949] @ vendor/freetype
 packages:
+- conda: https://conda.anaconda.org/chawyehsu/win-64/detours-4.0.1-h659f713_1.conda
+  sha256: 2467413adbd478129bee5e370f3b01f746748e6c2a11a0edda34a08a9af702fd
+  md5: daae8ee5f2279ebc7448695b039135f6
+  depends:
+  - vc >=14.3,<15
+  - vc14_runtime >=14.40.33810
+  - ucrt >=10.0.20348.0
+  license: MIT
+  size: 162928
+  timestamp: 1730871297234
+- conda: https://conda.anaconda.org/chawyehsu/win-arm64/detours-4.0.1-he0580a1_1.conda
+  sha256: c473d2c668eab4bfc530e8d22cec1ebe137e19517f8085baa04904a04db5a895
+  md5: 72b7c0d8eb40a5ea7ae9431ad9f96288
+  depends:
+  - vc >=14.3,<15
+  - vc14_runtime >=14.40.33810
+  license: MIT
+  size: 164458
+  timestamp: 1730871304266
 - conda: https://prefix.dev/conda-forge/noarch/vswhere-3.1.7-h40126e0_1.conda
   sha256: b72270395326dc56de9bd6ca82f63791b3c8c9e2b98e25242a9869a4ca821895
   md5: f622897afff347b715d046178ad745a5
