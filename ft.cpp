@@ -24,6 +24,8 @@
 //#include <windowsx.h>
 #include <tchar.h>
 
+#include <sstream>
+
 #include <math.h>
 
 #include <ft2build.h>
@@ -1345,7 +1347,7 @@ bool IsSFNTNameMatch(const FT_Face& face, FT_UInt nameID, wstring name) {
 
 	auto getWordSet = [](const wstring& str) {
 		set<wstring> words;
-		wstringstream ss(to_lower_case(str));
+		wstringstream ss{to_lower_case(str)};
 		wstring word;
 		while (ss >> word) {
 			if (word != L"regular")	// drop the regular style as it can be omitted
