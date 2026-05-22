@@ -51,9 +51,13 @@ HINSTANCE g_dllInstance;
 
 #include <detours.h>
 #ifdef _M_IX86
+#ifndef GDIPP_CMAKE_BUILD
 #pragma comment (lib, "detours.lib")
+#endif
 #else
+#ifndef GDIPP_CMAKE_BUILD
 #pragma comment (lib, "detours64.lib")
+#endif
 #endif
 // DATA_foo、ORIG_foo の２つをまとめて定義するマクロ
 #define HOOK_MANUALLY HOOK_DEFINE

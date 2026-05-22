@@ -4,7 +4,7 @@
 #include <tchar.h>
 #include "fteng.h"
 
-#ifdef _DLL
+#if defined(_DLL) && !defined(GDIPP_CMAKE_BUILD)
 #pragma comment(linker, "/nod:msvcprt.lib /nod:msvcprtd.lib")
 #endif
 

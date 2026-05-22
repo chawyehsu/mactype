@@ -12,6 +12,7 @@
 
 using json = nlohmann::json;
 
+#ifndef GDIPP_CMAKE_BUILD
 #ifdef _WIN64
 #ifdef DEBUG
 #pragma comment (lib, "iniparser64_dbg.lib")
@@ -23,6 +24,7 @@ using json = nlohmann::json;
 #pragma comment (lib, "iniparser_dbg.lib")
 #else
 #pragma comment (lib, "iniparser.lib")
+#endif
 #endif
 #endif
 

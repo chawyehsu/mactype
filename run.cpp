@@ -62,11 +62,15 @@ inline HRESULT HresultFromLastError()
 
 #include <detours.h>
 #ifdef _M_IX86
+#ifndef GDIPP_CMAKE_BUILD
 #pragma comment (lib, "detours.lib")
+#endif
 const auto MacTypeDll = L"MacType.dll";
 const auto MacTypeDllA = "MacType.dll";
 #else
+#ifndef GDIPP_CMAKE_BUILD
 #pragma comment (lib, "detours64.lib")
+#endif
 const auto MacTypeDll = L"MacType64.dll";
 const auto MacTypeDllA = "MacType64.dll";
 #endif
