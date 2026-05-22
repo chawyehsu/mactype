@@ -4,6 +4,8 @@ platforms = ["win-64"]
 preview = ["pixi-build"]
 
 [tasks]
+clean = { cmd = "pixi clean", description = "Clean build artifacts" }
+build = { cmd = "pixi build", description = "Build the project", depends-on = ["clean"] }
 
 [dependencies]
 detours = ">=4.0.1,<5"
@@ -18,7 +20,7 @@ IniParser = { path = "vendor/IniParser" }
 name = "mactype"
 authors = ["snowie2000 <mactype.feedback@gmail.com>"]
 description = "Better font rendering for Windows"
-version = "0.1.0"
+version = "1.2025.409.1"
 
 [package.build]
 backend = { name = "pixi-build-cmake", version = "*" }
