@@ -1,12 +1,22 @@
 # IniParser
+
 In-memory ini configuration format parser.
 
+## CMake build
 
-# Sample ini format:
-[Section]<br/>
-Key=Value<br/>
-Key2=Value2<br/>
-<br/>
-[Section2]<br/>
-Text=Hello World<br/>
-Number=42<br/>
+```powershell
+cmake -S . -B build
+cmake --build build --config Release
+```
+
+## Sample ini format
+
+```ini
+[Section]
+Key=Value
+Key2=Value2
+
+[Section2]
+Text=Hello World
+Number=42
+```

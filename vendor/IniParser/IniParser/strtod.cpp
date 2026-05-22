@@ -19,7 +19,6 @@
 
 #include <ctype.h>
 #include <errno.h>
-extern  int     errno;
 
 #include "strtod.h"
 
@@ -87,8 +86,8 @@ double wstrtod(const WCHAR *string, WCHAR **endPtr)
 {
     int sign, expSign = FALSE;
     double fraction, dblExp, *d;
-    register const WCHAR *p;
-    register int c;
+	const WCHAR *p;
+	int c;
     int exp = 0;		/* Exponent read from "EX" field. */
     int fracExp = 0;		/* Exponent that derives from the fractional
 				 * part.  Under normal circumstatnces, it is
