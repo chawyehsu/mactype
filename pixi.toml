@@ -1,6 +1,6 @@
 [workspace]
 channels = ["chawyehsu", "https://prefix.dev/conda-forge"]
-platforms = ["win-64", "win-arm64"]
+platforms = ["win-64"]
 preview = ["pixi-build"]
 
 [tasks]
@@ -9,6 +9,7 @@ preview = ["pixi-build"]
 detours = ">=4.0.1,<5"
 nlohmann_json = ">=3.11.3,<4"
 freetype = { path = "vendor/freetype" }
+IniParser = { path = "vendor/IniParser" }
 
 # ------------------ #
 # Package definition #
@@ -26,3 +27,4 @@ backend = { name = "pixi-build-cmake", version = "*" }
 detours = ">=4.0.1,<5"
 nlohmann_json = ">=3.11.3,<4"
 freetype = { path = "vendor/freetype" }
+IniParser = { path = "vendor/IniParser" }
