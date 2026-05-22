@@ -1,0 +1,312 @@
+From fbe6b0260d4b0d39a02091d0b2bce700c64b85dd Mon Sep 17 00:00:00 2001
+From: Chawye Hsu <su+git@chawyehsu.com>
+Date: Fri, 22 May 2026 18:20:22 +0800
+Subject: [PATCH 2/3] mactype: add FT_LCDMode_Set for dual lcd modes
+
+Signed-off-by: Chawye Hsu <su+git@chawyehsu.com>
+---
+ include/freetype/ftmodapi.h        |  3 ++
+ include/freetype/internal/ftobjs.h |  5 ++-
+ src/base/ftlcdfil.c                | 50 ++++++--------------------
+ src/base/ftobjs.c                  |  8 +++++
+ src/smooth/ftsmooth.c              | 57 ++++++++++++++++++++++--------
+ 5 files changed, 66 insertions(+), 57 deletions(-)
+
+diff --git a/include/freetype/ftmodapi.h b/include/freetype/ftmodapi.h
+index 7af33e33a..e2062cd82 100644
+--- a/include/freetype/ftmodapi.h
++++ b/include/freetype/ftmodapi.h
+@@ -798,6 +798,9 @@ FT_BEGIN_HEADER
+ 
+   /* */
+ 
++  // added by snowie2000
++  FT_EXPORT( void )
++  FT_LCDMode_Set( FT_Library library, FT_Int lcd_mode );
+ 
+ FT_END_HEADER
+ 
+diff --git a/include/freetype/internal/ftobjs.h b/include/freetype/internal/ftobjs.h
+index 4fa4991dd..0208e3413 100644
+--- a/include/freetype/internal/ftobjs.h
++++ b/include/freetype/internal/ftobjs.h
+@@ -910,11 +910,10 @@ FT_BEGIN_HEADER
+ 
+     FT_DebugHook_Func  debug_hooks[4];
+ 
+-#ifdef FT_CONFIG_OPTION_SUBPIXEL_RENDERING
++    FT_Int lcd_mode; // added by snowie, 0=Cleartype style, 1=harmony LCD
++
+     FT_LcdFiveTapFilter      lcd_weights;      /* filter weights, if any */
+-#else
+     FT_Vector                lcd_geometry[3];  /* RGB subpixel positions */
+-#endif
+ 
+     FT_Int             refcount;
+ 
+diff --git a/src/base/ftlcdfil.c b/src/base/ftlcdfil.c
+index 9adbf7518..53dfca6ab 100644
+--- a/src/base/ftlcdfil.c
++++ b/src/base/ftlcdfil.c
+@@ -23,12 +23,11 @@
+ #include <freetype/internal/ftobjs.h>
+ 
+ 
+-#ifdef FT_CONFIG_OPTION_SUBPIXEL_RENDERING
+ 
+   /* add padding sufficient for a 5-tap filter, */
+   /* which is 2/3 of a pixel                    */
+   FT_BASE_DEF( void )
+-  ft_lcd_padding( FT_BBox*        cbox,
++  ft_lcd_padding_cleartype( FT_BBox*        cbox,
+                   FT_GlyphSlot    slot,
+                   FT_Render_Mode  mode )
+   {
+@@ -108,21 +107,9 @@
+   }
+ 
+ 
+-  FT_EXPORT_DEF( FT_Error )
+-  FT_Library_SetLcdGeometry( FT_Library  library,
+-                             FT_Vector   sub[3] )
+-  {
+-    FT_UNUSED( library );
+-    FT_UNUSED( sub );
+-
+-    return FT_THROW( Unimplemented_Feature );
+-  }
+-
+-#else /* !FT_CONFIG_OPTION_SUBPIXEL_RENDERING */
+-
+   /* add padding to accommodate outline shifts */
+   FT_BASE_DEF( void )
+-  ft_lcd_padding( FT_BBox*        cbox,
++  ft_lcd_padding_harmony( FT_BBox*        cbox,
+                   FT_GlyphSlot    slot,
+                   FT_Render_Mode  mode )
+   {
+@@ -145,28 +132,6 @@
+   }
+ 
+ 
+-  FT_EXPORT_DEF( FT_Error )
+-  FT_Library_SetLcdFilterWeights( FT_Library      library,
+-                                  unsigned char  *weights )
+-  {
+-    FT_UNUSED( library );
+-    FT_UNUSED( weights );
+-
+-    return FT_THROW( Unimplemented_Feature );
+-  }
+-
+-
+-  FT_EXPORT_DEF( FT_Error )
+-  FT_Library_SetLcdFilter( FT_Library    library,
+-                           FT_LcdFilter  filter )
+-  {
+-    FT_UNUSED( library );
+-    FT_UNUSED( filter );
+-
+-    return FT_THROW( Unimplemented_Feature );
+-  }
+-
+-
+   /* documentation in ftlcdfil.h */
+ 
+   FT_EXPORT_DEF( FT_Error )
+@@ -184,7 +149,14 @@
+     return FT_Err_Ok;
+   }
+ 
+-#endif /* !FT_CONFIG_OPTION_SUBPIXEL_RENDERING */
+-
++  // Dynamic func call based on lcd_mode
++  FT_BASE_DEF( void )
++    ft_lcd_padding(FT_BBox* cbox,
++        FT_GlyphSlot   slot,
++        FT_Render_Mode mode) {
++    return slot->library->lcd_mode
++                ? ft_lcd_padding_harmony( cbox, slot, mode )
++                : ft_lcd_padding_cleartype( cbox, slot, mode );
++  }
+ 
+ /* END */
+diff --git a/src/base/ftobjs.c b/src/base/ftobjs.c
+index f9f64c40f..a545fa87f 100644
+--- a/src/base/ftobjs.c
++++ b/src/base/ftobjs.c
+@@ -5896,5 +5896,13 @@
+       return 0;
+   }
+ 
++  // added by snowie2000
++  FT_EXPORT_DEF( void )
++  FT_LCDMode_Set( FT_Library library, FT_Int lcd_mode )
++  {
++    if (library) {
++        library->lcd_mode = lcd_mode;
++    }
++  }
+ 
+ /* END */
+diff --git a/src/smooth/ftsmooth.c b/src/smooth/ftsmooth.c
+index 7378e6adc..ee22bf531 100644
+--- a/src/smooth/ftsmooth.c
++++ b/src/smooth/ftsmooth.c
+@@ -84,11 +84,10 @@
+ 
+   } TOrigin;
+ 
+-#ifndef FT_CONFIG_OPTION_SUBPIXEL_RENDERING
+ 
+   /* initialize renderer -- init its raster */
+   static FT_Error
+-  ft_smooth_init( FT_Module  module )   /* FT_Renderer */
++  ft_smooth_init_harmony( FT_Module  module )   /* FT_Renderer */
+   {
+     FT_Renderer  render = (FT_Renderer)module;
+ 
+@@ -111,7 +110,7 @@
+ 
+   /* This function writes every third byte in direct rendering mode */
+   static void
+-  ft_smooth_lcd_spans( int             y,
++  ft_smooth_lcd_spans_harmony( int             y,
+                        int             count,
+                        const FT_Span*  spans,
+                        void*           target_ )   /* TOrigin* */
+@@ -130,7 +129,7 @@
+ 
+ 
+   static FT_Error
+-  ft_smooth_raster_lcd( FT_Renderer  render,
++  ft_smooth_raster_lcd_harmony( FT_Renderer  render,
+                         FT_Outline*  outline,
+                         FT_Bitmap*   bitmap )
+   {
+@@ -146,7 +145,7 @@
+     /* Set up direct rendering to record them on each third byte. */
+     params.source     = outline;
+     params.flags      = FT_RASTER_FLAG_AA | FT_RASTER_FLAG_DIRECT;
+-    params.gray_spans = ft_smooth_lcd_spans;
++    params.gray_spans = ft_smooth_lcd_spans_harmony;
+     params.user       = &target;
+ 
+     params.clip_box.xMin = 0;
+@@ -197,7 +196,7 @@
+ 
+ 
+   static FT_Error
+-  ft_smooth_raster_lcdv( FT_Renderer  render,
++  ft_smooth_raster_lcdv_harmony( FT_Renderer  render,
+                          FT_Outline*  outline,
+                          FT_Bitmap*   bitmap )
+   {
+@@ -257,11 +256,10 @@
+     return error;
+   }
+ 
+-#else   /* FT_CONFIG_OPTION_SUBPIXEL_RENDERING */
+ 
+   /* initialize renderer -- init its raster */
+   static FT_Error
+-  ft_smooth_init( FT_Module  module )   /* FT_Renderer */
++  ft_smooth_init_cleartype( FT_Module  module )   /* FT_Renderer */
+   {
+     FT_Renderer  render = (FT_Renderer)module;
+ 
+@@ -277,7 +275,7 @@
+ 
+   /* This function applies a horizontal filter in direct rendering mode */
+   static void
+-  ft_smooth_lcd_spans( int             y,
++  ft_smooth_lcd_spans_cleartype( int             y,
+                        int             count,
+                        const FT_Span*  spans,
+                        void*           target_ )   /* TOrigin* */
+@@ -302,7 +300,7 @@
+ 
+ 
+   static FT_Error
+-  ft_smooth_raster_lcd( FT_Renderer  render,
++  ft_smooth_raster_lcd_cleartype( FT_Renderer  render,
+                         FT_Outline*  outline,
+                         FT_Bitmap*   bitmap )
+   {
+@@ -325,7 +323,7 @@
+       /* Set up direct rendering for instant filtering. */
+       params.source     = outline;
+       params.flags      = FT_RASTER_FLAG_AA | FT_RASTER_FLAG_DIRECT;
+-      params.gray_spans = ft_smooth_lcd_spans;
++      params.gray_spans = ft_smooth_lcd_spans_cleartype;
+       params.user       = &target;
+ 
+       params.clip_box.xMin = 0;
+@@ -371,7 +369,7 @@
+ 
+   /* This function applies a vertical filter in direct rendering mode */
+   static void
+-  ft_smooth_lcdv_spans( int             y,
++  ft_smooth_lcdv_spans_cleartype( int             y,
+                         int             count,
+                         const FT_Span*  spans,
+                         void*           target_ )   /* TOrigin* */
+@@ -396,7 +394,7 @@
+   }
+ 
+   static FT_Error
+-  ft_smooth_raster_lcdv( FT_Renderer  render,
++  ft_smooth_raster_lcdv_cleartype( FT_Renderer  render,
+                          FT_Outline*  outline,
+                          FT_Bitmap*   bitmap )
+   {
+@@ -414,7 +412,7 @@
+       /* Set up direct rendering for instant filtering. */
+       params.source     = outline;
+       params.flags      = FT_RASTER_FLAG_AA | FT_RASTER_FLAG_DIRECT;
+-      params.gray_spans = ft_smooth_lcdv_spans;
++      params.gray_spans = ft_smooth_lcdv_spans_cleartype;
+       params.user       = &target;
+ 
+       params.clip_box.xMin = 0;
+@@ -457,7 +455,36 @@
+     return error;
+   }
+ 
+-#endif  /* FT_CONFIG_OPTION_SUBPIXEL_RENDERING */
++
++// added by snowie2000
++// dynamic switch between cleartype and harmony lcd
++  static FT_Error
++  ft_smooth_init( FT_Renderer render )
++  {
++    return render->root.library->lcd_mode ? ft_smooth_init_harmony( render )
++                                          : ft_smooth_init_cleartype( render );
++  }
++
++  static FT_Error
++  ft_smooth_raster_lcd( FT_Renderer render,
++                                  FT_Outline* outline,
++                                  FT_Bitmap*  bitmap )
++  {
++    return render->root.library->lcd_mode
++               ? ft_smooth_raster_lcd_harmony( render, outline, bitmap )
++               : ft_smooth_raster_lcd_cleartype( render, outline,
++                                                        bitmap );
++  }
++
++  static FT_Error
++  ft_smooth_raster_lcdv( FT_Renderer render,
++                                   FT_Outline* outline,
++                                   FT_Bitmap*  bitmap )
++  {
++    return render->root.library->lcd_mode
++               ? ft_smooth_raster_lcdv_harmony( render, outline, bitmap )
++               : ft_smooth_raster_lcdv_cleartype( render, outline, bitmap );
++  }
+ 
+ /* Oversampling scale to be used in rendering overlaps */
+ #define SCALE  ( 1 << 2 )
+-- 
+2.54.0.windows.1
+

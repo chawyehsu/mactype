@@ -1,0 +1,26 @@
+From 92d5b9f5736a61368bcbfb60c2b3868c38d70953 Mon Sep 17 00:00:00 2001
+From: Chawye Hsu <su+git@chawyehsu.com>
+Date: Fri, 22 May 2026 18:38:15 +0800
+Subject: [PATCH 3/3] mactype: custom ft options
+
+Signed-off-by: Chawye Hsu <su+git@chawyehsu.com>
+---
+ include/freetype/config/ftoption.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/freetype/config/ftoption.h b/include/freetype/config/ftoption.h
+index b857e0ebb..db51f1541 100644
+--- a/include/freetype/config/ftoption.h
++++ b/include/freetype/config/ftoption.h
+@@ -934,7 +934,7 @@ FT_BEGIN_HEADER
+    * If this option is activated, it can be controlled with the
+    * `no-long-family-names` property of the 'pcf' driver module.
+    */
+-/* #define PCF_CONFIG_OPTION_LONG_FAMILY_NAMES */
++#define PCF_CONFIG_OPTION_LONG_FAMILY_NAMES
+ 
+ 
+   /*************************************************************************/
+-- 
+2.54.0.windows.1
+

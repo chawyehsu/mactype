@@ -1,0 +1,49 @@
+schema_version: 1
+
+context:
+  version: "2.14.3"
+
+package:
+  name: freetype
+  version: ${{ version }}
+
+source:
+  - url: https://download.savannah.gnu.org/releases/freetype/freetype-${{ version }}.tar.gz
+    sha256: e61b31ab26358b946e767ed7eb7f4bb2e507da1cfefeb7a8861ace7fd5c899a1
+    patches: 
+      - 0001-mactype-add-FT_Glyph_To_BitmapEx.patch
+      - 0002-mactype-add-FT_LCDMode_Set-for-dual-lcd-modes.patch
+      - 0003-mactype-custom-ft-options.patch
+
+build:
+  number: 0
+  skip:
+    - unix
+
+requirements:
+  build:
+    - ${{ compiler("c") }}
+    - ninja
+tests:
+  - package_contents:
+      lib:
+        - freetype.lib
+      include: 
+        - freetype/freetype.h
+      files:
+        - Library/lib/pkgconfig/freetype2.pc
+        - Library/lib/cmake/freetype/freetype-config.cmake
+
+about:
+  license: GPL-2.0-only OR FTL
+  license_file:
+    - docs/GPLv2.TXT
+    - docs/FTL.TXT
+  summary: A Free, High-Quality, and Portable Font Engine
+  description: |
+    FreeType is designed to be small, efficient, highly customizable and portable
+    while capable of producing high-quality output (glyph images) of most vector
+    and bitmap font formats.
+  homepage: https://www.freetype.org/
+  repository: http://git.savannah.gnu.org/cgit/freetype/
+  documentation: http://freetype.sourceforge.net/freetype2/documentation.html
